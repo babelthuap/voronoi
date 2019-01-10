@@ -21,19 +21,20 @@ export default class Canvas {
   }
 
   setPixel(x, y, rgb) {
-    this.imageData_.data.set(rgb, 4 * (x + this.width * y));
-  }
-
-  getPixel(x, y) {
     const red = 4 * (x + this.width * y);
-    return this.imageData_.data.subarray(red, red + 3);
+    this.imageData_.data[red] = rgb[0];
+    this.imageData_.data[red + 1] = rgb[1];
+    this.imageData_.data[red + 2] = rgb[2];
   }
 
   setRow(y, startX, endX, rgb) {
+    const data = this.imageData_.data;
     const startRed = 4 * (startX + this.width * y);
     const endRed = 4 * (endX + this.width * y);
     for (let i = startRed; i <= endRed; i += 4) {
-      this.imageData_.data.set(rgb, i);
+      data[i] = rgb[0];
+      data[i + 1] = rgb[1];
+      data[i + 2] = rgb[2];
     }
   }
 

@@ -7,20 +7,19 @@ const numTiles = parseInt(urlParams['n']) ||
 const metric = [1, 2, 3].includes(parseInt(urlParams['metric'])) ?
     parseInt(urlParams['metric']) :
     2;
-const borders = 'borders' in urlParams;
 
 let v;
 
 stopwatch(() => {
-  v = new Voronoi().randomize(numTiles).partition(metric).render(borders);
+  v = new Voronoi().randomize(numTiles).partition(metric).render();
 });
 
 v.canvas_.addEventListener('mousedown', () => {
-  stopwatch(() => v.recolor(borders));
+  stopwatch(() => v.recolor());
 });
 
 document.addEventListener('keydown', e => {
   if (e.keyCode === 86 /* 'v' */) {
-    stopwatch(() => v.randomize(numTiles).partition(metric).render(borders));
+    stopwatch(() => v.randomize(numTiles).partition(metric).render());
   }
 });
