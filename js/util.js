@@ -1,9 +1,19 @@
+const MASK_15 = 2 ** 15 - 1;
+
 export function extractUrlParams() {
   return location.search.split(/[?&]/).filter(e => e).reduce((map, e) => {
     const [k, v] = e.split('=');
     map[k] = v;
     return map;
   }, {});
+}
+
+export function pair(x, y) {
+  return (x << 15) | y;
+}
+
+export function unpair(n) {
+  return [n >> 15, n & MASK_15];
 }
 
 export function rand(n) {
