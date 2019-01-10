@@ -19,6 +19,32 @@ class Tile {
     }
     return this;
   }
+
+  render(canvas) {
+    let prevStart = Infinity;
+    let prevEnd = -Infinity;
+    this.rows.forEach(([startX, endX], y) => {
+      const clamp = n => n < startX ? startX : (n > endX ? endX : n);
+      canvas.setRow(y, startX, endX, this.color);
+      // Draw borders
+      if (startX !== 0) {
+        canvas.setPixel(startX, y, BLACK);
+      }
+      if (y > 0) {
+        if (startX < prevStart) {
+          canvas.setRow(y, clamp(startX + 1), clamp(prevStart - 1), BLACK);
+        }
+        if (endX > prevEnd) {
+          canvas.setRow(y, clamp(prevEnd + 1), clamp(endX - 1), BLACK);
+        }
+      }
+      if (endX !== canvas.width - 1) {
+        canvas.setPixel(endX, y, BLACK);
+      }
+      prevStart = startX;
+      prevEnd = endX;
+    });
+  }
 }
 
 export default class Voronoi {
@@ -69,31 +95,8 @@ export default class Voronoi {
   }
 
   render() {
-    const widthMinusOne = this.canvas_.width - 1;
     for (let tile of this.tiles_) {
-      let prevStart = Infinity;
-      let prevEnd = -Infinity;
-      tile.rows.forEach(([startX, endX], y) => {
-        const clamp = n => n < startX ? startX : (n > endX ? endX : n);
-        this.canvas_.setRow(y, startX, endX, tile.color);
-        // Draw borders
-        if (startX !== 0) {
-          this.canvas_.setPixel(startX, y, BLACK);
-        }
-        if (y > 0) {
-          if (startX < prevStart) {
-            this.canvas_.setRow(y, clamp(startX + 1), clamp(prevStart - 1), BLACK);
-          }
-          if (endX > prevEnd) {
-            this.canvas_.setRow(y, clamp(prevEnd + 1), clamp(endX - 1), BLACK);
-          }
-        }
-        if (endX !== widthMinusOne) {
-          this.canvas_.setPixel(endX, y, BLACK);
-        }
-        prevStart = startX;
-        prevEnd = endX;
-      });
+      tile.render(this.canvas_);
     }
     this.canvas_.repaint();
     return this;
