@@ -1,6 +1,8 @@
 import Canvas from './Canvas.js';
 import {metrics, rand} from './util.js';
 
+const BLACK = new Uint8ClampedArray(3);
+
 class Tile {
   constructor(x, y) {
     this.x = x;
@@ -64,9 +66,29 @@ export default class Voronoi {
   }
 
   render() {
+    const widthMinusOne = this.canvas_.width - 1;
     for (let tile of this.tiles_) {
+      let prevStart = Infinity;
+      let prevEnd = -Infinity;
       tile.rows.forEach(([startX, endX], y) => {
+        const clamp = n => n < startX ? startX : (n > endX ? endX : n);
         this.canvas_.setRow(y, startX, endX, tile.color);
+        if (startX !== 0) {
+          this.canvas_.setPixel(startX, y, BLACK);
+        }
+        if (y > 0) {
+          if (startX < prevStart) {
+            this.canvas_.setRow(y, clamp(startX + 1), clamp(prevStart - 1), BLACK);
+          }
+          if (endX > prevEnd) {
+            this.canvas_.setRow(y, clamp(prevEnd + 1), clamp(endX - 1), BLACK);
+          }
+        }
+        if (endX !== widthMinusOne) {
+          this.canvas_.setPixel(endX, y, BLACK);
+        }
+        prevStart = startX;
+        prevEnd = endX;
       });
     }
     this.canvas_.repaint();
