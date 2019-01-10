@@ -26,6 +26,7 @@ export default class Voronoi {
     this.tiles_ = [];
     this.canvas_ = new Canvas();
     this.canvas_.attachToDom();
+    this.metric_ = undefined;
   }
 
   randomize(numTiles) {
@@ -40,7 +41,8 @@ export default class Voronoi {
     return this;
   }
 
-  partition(metric) {
+  partition(metric = this.metric_) {
+    this.metric_ = metric;
     if (this.tiles_.length === 0) {
       console.error(`Can't partition with empty tiles array.`);
       return this;
@@ -73,6 +75,7 @@ export default class Voronoi {
       tile.rows.forEach(([startX, endX], y) => {
         const clamp = n => n < startX ? startX : (n > endX ? endX : n);
         this.canvas_.setRow(y, startX, endX, tile.color);
+        // Draw borders
         if (startX !== 0) {
           this.canvas_.setPixel(startX, y, BLACK);
         }
@@ -102,5 +105,18 @@ export default class Voronoi {
       tile.color[2] = rand(256);
     }
     return this.render();
+  }
+
+  resize() {
+    const wRatio = window.innerWidth / this.canvas_.width;
+    const hRatio = window.innerHeight / this.canvas_.height;
+    for (let tile of this.tiles_) {
+      tile.x *= wRatio;
+      tile.y *= hRatio;
+      tile.rows = new Map();
+    }
+    this.canvas_ = new Canvas();
+    this.canvas_.attachToDom();
+    this.partition().render();
   }
 }

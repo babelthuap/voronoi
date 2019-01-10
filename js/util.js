@@ -11,9 +11,11 @@ export function rand(n) {
 }
 
 export function stopwatch(label, fn) {
-  let start = performance.now();
+  const start = performance.now();
   fn();
-  console.log(label, `${(performance.now() - start).toFixed(1)} ms`);
+  const duration = performance.now() - start;
+  console.log(label, `${duration.toFixed(1)} ms`);
+  return duration;
 }
 
 export const metrics = {

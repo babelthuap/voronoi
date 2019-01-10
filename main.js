@@ -20,6 +20,10 @@ v.canvas_.addEventListener('mousedown', () => {
 
 document.addEventListener('keydown', e => {
   if (e.keyCode === 86 /* 'v' */) {
-    stopwatch('rerender', () => v.randomize(numTiles).partition(metric).render());
+    stopwatch('rerender', () => v.randomize(numTiles).partition().render());
   }
+});
+
+window.addEventListener('resize', () => {
+  stopwatch('resize', () => v.resize());
 });
