@@ -23,10 +23,11 @@ class Tile {
 
 export default class Voronoi {
   constructor() {
-    this.tiles_ = [];
     this.canvas_ = new Canvas();
     this.canvas_.attachToDom();
+    this.listeners_ = new Set();
     this.metric_ = undefined;
+    this.tiles_ = [];
   }
 
   randomize(numTiles) {
@@ -61,7 +62,7 @@ export default class Voronoi {
             closestTile = tile;
           }
         }
-        closestTile && closestTile.addPixel(x, y);
+        closestTile.addPixel(x, y);
       }
     }
     return this;
@@ -113,10 +114,22 @@ export default class Voronoi {
     for (let tile of this.tiles_) {
       tile.x *= wRatio;
       tile.y *= hRatio;
-      tile.rows = new Map();
+      tile.rows.clear();
     }
+    this.listeners_.forEach(args => this.canvas_.removeEventListener(...args));
     this.canvas_ = new Canvas();
     this.canvas_.attachToDom();
+    this.listeners_.forEach(args => this.canvas_.addEventListener(...args));
     this.partition().render();
+  }
+
+  addEventListener(...args) {
+    this.listeners_.add(args);
+    this.canvas_.addEventListener(...args);
+  }
+
+  removeEventListener(...args) {
+    this.listeners_.delete(args);
+    this.canvas_.removeEventListener(...args);
   }
 }
