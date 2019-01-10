@@ -10,16 +10,16 @@ const metric = [1, 2, 3].includes(parseInt(urlParams['metric'])) ?
 
 let v;
 
-stopwatch(() => {
+stopwatch('initial render', () => {
   v = new Voronoi().randomize(numTiles).partition(metric).render();
 });
 
 v.canvas_.addEventListener('mousedown', () => {
-  stopwatch(() => v.recolor());
+  stopwatch('recolor', () => v.recolor());
 });
 
 document.addEventListener('keydown', e => {
   if (e.keyCode === 86 /* 'v' */) {
-    stopwatch(() => v.randomize(numTiles).partition(metric).render());
+    stopwatch('rerender', () => v.randomize(numTiles).partition(metric).render());
   }
 });

@@ -10,10 +10,10 @@ export function rand(n) {
   return Math.floor(Math.random() * n);
 }
 
-export function stopwatch(fn) {
+export function stopwatch(label, fn) {
   let start = performance.now();
   fn();
-  console.log((performance.now() - start).toFixed(1), 'ms');
+  console.log(label, `${(performance.now() - start).toFixed(1)} ms`);
 }
 
 export const metrics = {
