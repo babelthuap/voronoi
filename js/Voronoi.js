@@ -1,5 +1,5 @@
 import Canvas from './Canvas.js';
-import {rand} from './util.js';
+import {metrics, rand} from './util.js';
 
 class Tile {
   constructor(x, y) {
@@ -30,25 +30,20 @@ export default class Voronoi {
     this.tiles_ = [];
     const width = this.canvas_.width;
     const height = this.canvas_.height;
-    const capitols = new Map();
     while (this.tiles_.length < numTiles) {
-      const x = rand(width);
-      const y = rand(height);
-      const row =
-          capitols.has(y) ? capitols.get(y) : capitols.set(y, new Set()).get(y);
-      if (!row.has(x)) {
-        row.add(x);
-        this.tiles_.push(new Tile(x, y));
-      }
+      const x = Math.random() * width;
+      const y = Math.random() * height;
+      this.tiles_.push(new Tile(x, y));
     }
     return this;
   }
 
-  partition() {
+  partition(metric) {
     if (this.tiles_.length === 0) {
       console.error(`Can't partition with empty tiles array.`);
       return this;
     }
+    const distFunction = metrics[metric];
     const width = this.canvas_.width;
     const height = this.canvas_.height;
     for (let y = 0; y < height; y++) {
@@ -56,13 +51,13 @@ export default class Voronoi {
         let closestTile;
         let minDist = Infinity;
         for (let tile of this.tiles_) {
-          const dist = (x - tile.x) ** 2 + (y - tile.y) ** 2;
+          const dist = distFunction(x, y, tile.x, tile.y);
           if (dist < minDist) {
             minDist = dist;
             closestTile = tile;
           }
         }
-        closestTile.addPixel(x, y);
+        closestTile && closestTile.addPixel(x, y);
       }
     }
     return this;

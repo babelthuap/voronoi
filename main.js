@@ -2,14 +2,23 @@ import Voronoi from './js/Voronoi.js';
 import {extractUrlParams, stopwatch} from './js/util.js';
 
 const urlParams = extractUrlParams();
-const numTiles = urlParams['n'] || 100;
+const numTiles = parseInt(urlParams['n']) || 100;
+const metric = [1, 2, 3].includes(parseInt(urlParams['metric'])) ?
+    parseInt(urlParams['metric']) :
+    2;
 
 let v;
 
 stopwatch(() => {
-  v = new Voronoi().randomize(numTiles).partition().render();
+  v = new Voronoi().randomize(numTiles).partition(metric).render();
 });
 
 v.canvas_.addEventListener('mousedown', () => {
   stopwatch(() => v.recolor());
+});
+
+document.addEventListener('keydown', e => {
+  if (e.keyCode === 86 /* 'v' */) {
+    stopwatch(() => v.randomize(numTiles).partition(metric).render());
+  }
 });
